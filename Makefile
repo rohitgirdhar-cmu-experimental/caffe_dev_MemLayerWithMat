@@ -158,6 +158,13 @@ endif
 CUDA_LIB_DIR += $(CUDA_DIR)/lib
 
 INCLUDE_DIRS += $(BUILD_INCLUDE_DIR) ./src ./include
+
+# for the remaining libs
+CAFFE_INSTALL_DIR := /IUS/homes4/rohytg/software/caffe_install
+INCLUDE_DIRS += $(CAFFE_INSTALL_DIR)/gflags_install/include $(CAFFE_INSTALL_DIR)/glog_install/include $(CAFFE_INSTALL_DIR)/mdb_install/include
+LIBRARY_DIRS += $(CAFFE_INSTALL_DIR)/gflags_install/lib $(CAFFE_INSTALL_DIR)/glog_install/lib $(CAFFE_INSTALL_DIR)/mdb_install/lib
+
+
 ifneq ($(CPU_ONLY), 1)
 	INCLUDE_DIRS += $(CUDA_INCLUDE_DIR)
 	LIBRARY_DIRS += $(CUDA_LIB_DIR)
@@ -295,6 +302,8 @@ ifeq ($(BLAS), mkl)
 else ifeq ($(BLAS), open)
 	# OpenBLAS
 	LIBRARIES += openblas
+	BLAS_INCLUDE += /IUS/homes4/rohytg/software/caffe_install/OpenBLAS_install/include
+	BLAS_LIB += /IUS/homes4/rohytg/software/caffe_install/OpenBLAS_install/lib
 else
 	# ATLAS
 	ifeq ($(LINUX), 1)
@@ -317,7 +326,7 @@ LIBRARY_DIRS += $(LIB_BUILD_DIR)
 # Automatic dependency generation (nvcc is handled separately)
 CXXFLAGS += -MMD -MP
 
-# Complete build flags.
+# Complete build flag.
 COMMON_FLAGS += $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 CXXFLAGS += -pthread -fPIC $(COMMON_FLAGS) $(WARNINGS)
 NVCCFLAGS += -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)
